@@ -33,12 +33,12 @@ Data for data.cervantesvirtual.com data
     PREFIX rdac: <http://rdaregistry.info/Elements/c/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-    select ?subject ?subjectLabel ?researcher
+    select ?subject ?subjectLabel ?researcher ?researcherLabel
     where{
         ?w dc:subject ?subject .
         ?w rdaw:author ?researcher .
         ?researcher rdfs:label ?researcherLabel .
-        ?subject rdfs:label ?subjectLabel
+        ?subject rdfs:label ?subjectLabel .
         FILTER (?subject != ?researcher)
         {select distinct ?subject (count(distinct ?researcher) as ?total)
         where {
@@ -51,4 +51,4 @@ Data for data.cervantesvirtual.com data
         order by desc(?total)
         }
     }
-    limit 10000
+    limit 5000
