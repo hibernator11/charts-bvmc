@@ -95,3 +95,46 @@ Data for data.cervantesvirtual.com data
         }
     }
     limit 5000
+    
+    
+## query 4 example
+
+    PREFIX rdaw: <http://rdaregistry.info/Elements/w/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX rdaa: <http://rdaregistry.info/Elements/a/>
+    PREFIX rda: <http://www.rdaregistry.info/>
+    PREFIX rdac: <http://rdaregistry.info/Elements/c/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    select distinct ?subject ?subjectLabel ?researcher ?researcherLabel
+    where{
+        ?w dc:subject ?subject .
+        ?subject rdf:type rdac:Person .
+        ?w rdaw:author ?researcher .
+        ?researcher rdf:type rdac:Person .
+        ?researcher rdfs:label ?researcherLabel .
+        ?subject rdfs:label ?subjectLabel .
+        FILTER (?subject != ?researcher)
+        {select distinct ?subject (count(distinct ?r1) as ?totalResearchers)
+        where {
+            ?w1 dc:subject ?subject .
+            ?subject rdf:type rdac:Person .
+            ?w1 rdaw:author ?r1 .
+        }
+        group by ?subject
+        having (?totalResearchers > 5)
+        order by desc(?totalResearchers)
+        }
+        {select distinct ?researcher (count(distinct ?s2) as ?totalSubjects)
+        where {
+           ?w2 dc:subject ?s2 .
+           ?s2 rdf:type rdac:Person .
+           ?w2 rdaw:author ?researcher .
+        }
+        group by ?researcher
+        having (?totalSubjects > 3)
+        order by desc(?totalSubjects)
+        }
+    }
+    limit 100
